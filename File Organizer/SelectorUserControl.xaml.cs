@@ -7,12 +7,10 @@ namespace File_Organizer
     /// </summary>
     public partial class SelectorUserControl : UserControl
     {
-        private const string DEFAULT_SELECTED_PATH = "D:\\123\\test";
-
         public SelectorUserControl()
         {
             InitializeComponent();
-            DataContext = new SelectorViewModel(DEFAULT_SELECTED_PATH);
+            DataContext = new SelectorViewModel(Constants.DEFAULT_SELECTED_PATH);
         }
     }
 }

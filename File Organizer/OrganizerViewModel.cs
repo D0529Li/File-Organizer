@@ -14,14 +14,6 @@ namespace File_Organizer
 {
     public class OrganizerViewModel : INotifyPropertyChanged
     {
-        #region Constants
-
-        private const string DEFAULT_SELECTED_PATH = "D:\\123\\test";
-        private const string DEFAULT_VIDEO_COLLECTION_PATH = "G:\\123";
-        private const string DEFAULT_XML_PATH = "C:\\Github\\File-Organizer\\File Organizer\\bin\\Debug\\net8.0-windows\\people.xml";
-
-        #endregion
-
         #region Fields
 
         private readonly System.Timers.Timer timer = new System.Timers.Timer(2000);
@@ -39,7 +31,7 @@ namespace File_Organizer
             get { return $"{current} / {total} {Math.Round((double)current * 100 / total, 2)}%"; }
         }
 
-        public string SelectedPath { get; set; } = DEFAULT_SELECTED_PATH;
+        public string SelectedPath { get; set; } = Constants.DEFAULT_SELECTED_PATH;
         public string DisplayedImagePath { get; set; } = string.Empty;
         public string DisplayedVideoPath { get; set; } = string.Empty;
         public string DisplayedVideoName
@@ -80,7 +72,7 @@ namespace File_Organizer
             DrawCommand = new DelegateCommand<object>(OnDraw);
             MuteButtonClickCommand = new DelegateCommand<object>(OnMuteButtonClick);
 
-            SelectedPath = DEFAULT_SELECTED_PATH;
+            SelectedPath = Constants.DEFAULT_SELECTED_PATH;
             timer.Elapsed += Timer_Elapsed;
 
             OnPropertyChanged(nameof(SelectedPath));
@@ -132,7 +124,7 @@ namespace File_Organizer
             var serializer = new XmlSerializer(typeof(People));
             var people = new People();
             people.UpdatePeople();
-            var writer = new StreamWriter(DEFAULT_XML_PATH, false);
+            var writer = new StreamWriter(Constants.DEFAULT_XML_PATH, false);
             serializer.Serialize(writer, people);
         }
 
@@ -205,7 +197,6 @@ namespace File_Organizer
 
             Directory.CreateDirectory(path + "\\TEMP");
 
-            var picExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
             var files = Directory.GetFiles(path, "*", searchOption: SearchOption.TopDirectoryOnly);
             var index = 0;
 
@@ -213,7 +204,7 @@ namespace File_Organizer
             foreach (var file in files)
             {
                 var newFileName = string.Empty;
-                if (picExtensions.Contains(Path.GetExtension(file).ToLower()))
+                if (Constants.PicExtensions.Contains(Path.GetExtension(file).ToLower()))
                     File.Move(file, path + "\\TEMP\\" + ++index + ".jpg");
             }
 
@@ -292,11 +283,11 @@ namespace File_Organizer
 
         private bool Deserialize()
         {
-            if (!File.Exists(DEFAULT_XML_PATH))
+            if (!File.Exists(Constants.DEFAULT_XML_PATH))
                 return false;
 
             var serializer = new XmlSerializer(typeof(People));
-            using (var reader = new StreamReader(DEFAULT_XML_PATH))
+            using (var reader = new StreamReader(Constants.DEFAULT_XML_PATH))
             {
                 var deserializedPeople = serializer.Deserialize(reader);
                 if (deserializedPeople is null)
@@ -323,11 +314,11 @@ namespace File_Organizer
             {
                 var random = new Random();
                 var index = random.Next(drawnPerson.NumOfFiles);
-                DisplayedVideoPath = Directory.GetFiles(DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name)[index];
+                DisplayedVideoPath = Directory.GetFiles(Constants.DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name)[index];
             }
             else
             {
-                DisplayedVideoPath = DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name + ".mp4";
+                DisplayedVideoPath = Constants.DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name + ".mp4";
             }
             IsMuteButtonVisible = true;
             OnPropertyChanged(nameof(IsMuteButtonVisible));
