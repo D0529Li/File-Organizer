@@ -154,22 +154,14 @@ namespace File_Organizer
             // Prep: Rename all files to .jpg
             RenamePicExtensions(path);
 
-            // Organize. Multi-threaded.
+            // Organize.
             foreach (var fileFullName in Directory.EnumerateFiles(path))
             {
-                var fileName = Path.GetFileName(fileFullName);
-                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileFullName);
-                var fileExtension = Path.GetExtension(fileFullName).ToLower();
-                bool isHorizontal = true;
+                var stream = File.OpenRead(fileFullName);
+                var image = Image.FromStream(stream, false, false);
+                stream.Close();
 
-                // must dispose bitmap before moving the file
-                using (var bitmap = new Bitmap(fileFullName))
-                {
-                    if (bitmap.Height > bitmap.Width)
-                        isHorizontal = false;
-                }
-
-                if (isHorizontal)
+                if (image.Width > image.Height)
                     File.Move(fileFullName, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
                 else
                     File.Move(fileFullName, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
