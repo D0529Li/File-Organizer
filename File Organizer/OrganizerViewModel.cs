@@ -145,6 +145,8 @@ namespace File_Organizer
             var dirVer = Directory.CreateDirectory($"{path}\\{dirName} 竖屏");
             var indexHor = Directory.GetFiles(dirHor.FullName).Length;
             var indexVer = Directory.GetFiles(dirVer.FullName).Length;
+            var lockHor = new object();
+            var lockVer = new object();
 
             // Prep: Reorder existing files.
             var task1 = Task.Run(() => ReorderFiles(dirHor.FullName));
@@ -154,18 +156,35 @@ namespace File_Organizer
             // Prep: Rename all files to .jpg
             RenamePicExtensions(path);
 
-            // Organize.
-            foreach (var fileFullName in Directory.EnumerateFiles(path))
+            // Organize multi-threaded
+            var files = Directory.GetFiles(path);
+            Parallel.ForEach(files, file =>
             {
-                var stream = File.OpenRead(fileFullName);
+                var stream = File.OpenRead(file);
                 var image = Image.FromStream(stream, false, false);
                 stream.Close();
-
                 if (image.Width > image.Height)
-                    File.Move(fileFullName, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
+                    lock (lockHor)
+                        File.Move(file, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
                 else
-                    File.Move(fileFullName, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
-            }
+                    lock (lockVer)
+                        File.Move(file, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
+                image.Dispose();
+            });
+
+            //// Organize single-threaded
+            //foreach (var fileFullName in Directory.EnumerateFiles(path))
+            //{
+            //    var stream = File.OpenRead(fileFullName);
+            //    var image = Image.FromStream(stream, false, false);
+            //    stream.Close();
+
+            //    if (image.Width > image.Height)
+            //        File.Move(fileFullName, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
+            //    else
+            //        File.Move(fileFullName, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
+            //    image.Dispose();
+            //}
         }
 
         private void OnOrganize(object _)
