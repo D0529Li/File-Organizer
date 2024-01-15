@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -134,7 +135,7 @@ namespace File_Organizer
             OnPropertyChanged(nameof(MuteButtonText));
         }
 
-        private async Task OrganizeAsync(string path, int numOfThread = 10)
+        private async Task OrganizeAsync(string path)
         {
             // Todo: Add progress bar
 
@@ -149,10 +150,11 @@ namespace File_Organizer
             var lockHor = new object();
             var lockVer = new object();
 
-            // Prep: Reorder existing files.
+            // Prep: Reorder existing files and uncheck readonly
             var task1 = Task.Run(() => ReorderFiles(dirHor.FullName));
             var task2 = Task.Run(() => ReorderFiles(dirVer.FullName));
             await Task.WhenAll(task1, task2);
+            await Task.Run(() => UncheckReadonlyOnFiles(path));
 
             // Prep: Rename all files to .jpg
             RenamePicExtensions(path);
@@ -230,6 +232,14 @@ namespace File_Organizer
             Directory.Delete(path + "\\TEMP");
 
             return true;
+        }
+
+        private static void UncheckReadonlyOnFiles(string path)
+        {
+            var dir = new DirectoryInfo(path);
+            IEnumerable<FileInfo> files = dir.EnumerateFiles();
+            foreach (var file in files)
+                file.IsReadOnly = false;
         }
 
         private static void ReorderFiles(string path)
