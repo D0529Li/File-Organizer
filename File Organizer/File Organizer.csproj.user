@@ -7,7 +7,7 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="PictureSelector.xaml.cs">
+    <Compile Update="PictureSelectorUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -15,7 +15,7 @@
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="PictureSelector.xaml">
+    <Page Update="PictureSelectorUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
