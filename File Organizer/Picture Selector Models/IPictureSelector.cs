@@ -76,7 +76,7 @@ namespace File_Organizer
         {
             string[] extensions = [".jpg", ".png", ".jpeg"];
             ArgumentNullException.ThrowIfNull(extensions);
-            
+
             var dir = new DirectoryInfo(path);
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
             return files.Where(f => extensions.Contains(f.Extension)).Select(f => f.FullName).ToList();

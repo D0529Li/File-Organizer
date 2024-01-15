@@ -2,15 +2,15 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Timers;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace File_Organizer
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class OrganizerViewModel : INotifyPropertyChanged
     {
         #region Constants
 
@@ -70,7 +70,7 @@ namespace File_Organizer
 
         #endregion
 
-        public MainWindowViewModel()
+        public OrganizerViewModel()
         {
             StartStopButtonCommand = new DelegateCommand<object>(OnStartStopButtonClick);
             SelectDirectoryCommand = new DelegateCommand<object>(OnSelectDirectory);
@@ -107,9 +107,9 @@ namespace File_Organizer
                 OnPropertyChanged(nameof(IsProgressBarVisible));
                 OnPropertyChanged(nameof(StartStopButtonText));
             }
-            
+
         }
-        
+
         private void OnSelectDirectory(object _)
         {
             var dialog = new FolderBrowserDialog() { SelectedPath = SelectedPath };
@@ -304,7 +304,7 @@ namespace File_Organizer
                 else
                     return;
             }
-            
+
             var drawnPerson = people.DrawPerson();
 
             if (drawnPerson.IsFolder)

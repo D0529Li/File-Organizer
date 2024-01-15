@@ -94,7 +94,6 @@ namespace File_Organizer
 
         private IPictureSelector? pictureSelector;
 
-
         #region Commands
 
         public ICommand ChooseFolderCommand { get; set; }
@@ -112,7 +111,6 @@ namespace File_Organizer
         public ICommand FolderFilterModeSelectedCommand { get; set; }
 
         #endregion
-
 
         public PictureSelectorViewModel(string selectedPath)
         {
@@ -153,12 +151,12 @@ namespace File_Organizer
         {
             SelectedMode = FilterMode.PicFilterMode;
         }
-        
+
         private void OnWallpaperModeSelected(object _)
         {
             SelectedMode = FilterMode.WallpaperMode;
         }
-        
+
         private void OnFolderFilterModeSelected(object _)
         {
             SelectedMode = FilterMode.FolderFilterMode;
@@ -189,7 +187,7 @@ namespace File_Organizer
                 PromptCommit();
                 return;
             }
-            
+
             IsStarted = true;
             RefreshButtons();
             RefreshImage();
@@ -207,7 +205,7 @@ namespace File_Organizer
             pictureSelector?.NextRandom();
             RefreshImage();
         }
-        
+
         private void OnPrevious(object _)
         {
             try

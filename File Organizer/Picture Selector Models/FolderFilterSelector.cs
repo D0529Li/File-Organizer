@@ -211,7 +211,7 @@ namespace File_Organizer
                     newFileName = $"{++index}{Path.GetExtension(file).ToLower()}";
                 File.Move(file, folder + "\\TEMP\\" + newFileName);
             }
-            
+
             // Move files from TEMP folder to root folder.
             index = 0;
             files = Directory.GetFiles(folder + "\\TEMP");
@@ -224,7 +224,7 @@ namespace File_Organizer
                     newFileName = $"{++index}{Path.GetExtension(file).ToLower()}";
                 File.Move(file, folder + "\\" + newFileName);
             }
-            
+
             // Remove subdirectories
             foreach (var subDirectory in Directory.GetDirectories(folder))
                 Directory.Delete(subDirectory, true);
