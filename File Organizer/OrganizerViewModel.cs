@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Xml.Serialization;
@@ -23,7 +25,6 @@ namespace File_Organizer
         #region Fields
 
         private readonly System.Timers.Timer timer = new System.Timers.Timer(2000);
-        private Random random = new Random();
         private int total = 0;
         private int current = 0;
         private People people = new People();
@@ -142,7 +143,7 @@ namespace File_Organizer
             OnPropertyChanged(nameof(MuteButtonText));
         }
 
-        private void Organize(string path)
+        private async Task OrganizeAsync(string path, int numOfThread = 10)
         {
             if (path == string.Empty)
                 return;
@@ -150,14 +151,18 @@ namespace File_Organizer
             var dirName = Path.GetFileName(path);
             var dirHor = Directory.CreateDirectory($"{path}\\{dirName} 横屏");
             var dirVer = Directory.CreateDirectory($"{path}\\{dirName} 竖屏");
-            var numHor = Directory.GetFiles(dirHor.FullName).Length;
-            var numVer = Directory.GetFiles(dirVer.FullName).Length;
-            var hasPng = false;
-            var hasJpeg = false;
+            var indexHor = Directory.GetFiles(dirHor.FullName).Length;
+            var indexVer = Directory.GetFiles(dirVer.FullName).Length;
 
-            ReorderFiles(dirHor.FullName);
-            ReorderFiles(dirVer.FullName);
+            // Prep: Reorder existing files.
+            var task1 = Task.Run(() => ReorderFiles(dirHor.FullName));
+            var task2 = Task.Run(() => ReorderFiles(dirVer.FullName));
+            await Task.WhenAll(task1, task2);
 
+            // Prep: Rename all files to .jpg
+            RenamePicExtensions(path);
+
+            // Organize. Multi-threaded.
             foreach (var fileFullName in Directory.EnumerateFiles(path))
             {
                 var fileName = Path.GetFileName(fileFullName);
@@ -165,16 +170,7 @@ namespace File_Organizer
                 var fileExtension = Path.GetExtension(fileFullName).ToLower();
                 bool isHorizontal = true;
 
-                if (fileExtension != ".jpg")
-                {
-                    if (fileExtension == ".png")
-                        hasPng = true;
-                    else if (fileExtension == ".jpeg")
-                        hasJpeg = true;
-                    continue;
-                }
-
-                // must dispose the bitmap before moving the file
+                // must dispose bitmap before moving the file
                 using (var bitmap = new Bitmap(fileFullName))
                 {
                     if (bitmap.Height > bitmap.Width)
@@ -182,40 +178,55 @@ namespace File_Organizer
                 }
 
                 if (isHorizontal)
-                    File.Move(fileFullName, $"{dirHor}\\{dirName} 横屏 ({++numHor}).jpg");
+                    File.Move(fileFullName, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
                 else
-                    File.Move(fileFullName, $"{dirVer}\\{dirName} 竖屏 ({++numVer}).jpg");
+                    File.Move(fileFullName, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
             }
-
-            if (hasPng)
-            {
-                RenameFileExtensions(path, ".png", ".jpg");
-                Organize(path);
-            }
-            if (hasJpeg)
-            {
-                RenameFileExtensions(path, ".jpeg", ".jpg");
-                Organize(path);
-            }
-
-            // logic can be modified.
         }
 
         private void OnOrganize(object _)
         {
-            Task.Run(() => Organize(SelectedPath));
+            Task.Run(() => OrganizeAsync(SelectedPath));
         }
 
-        private static void RenameFileExtensions(string path, string inExtension, string outExtension)
+        private bool RenamePicExtensions(string path)
         {
             if (path == string.Empty)
-                return;
+                return false;
 
-            foreach (var fileFullName in Directory.EnumerateFiles(path))
+            if (Directory.Exists(path + "\\TEMP"))
             {
-                if (Path.GetExtension(fileFullName) == inExtension)
-                    File.Move(fileFullName, $"{path}\\{Path.GetFileNameWithoutExtension(fileFullName)}{outExtension}");
+                if (System.Windows.MessageBox.Show("Temp folder already exists. Delete it? ", "Temp Folder Conflict",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                    return false;
+                else
+                    Directory.Delete(path + "\\TEMP");
             }
+
+            Directory.CreateDirectory(path + "\\TEMP");
+
+            var picExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
+            var files = Directory.GetFiles(path, "*", searchOption: SearchOption.TopDirectoryOnly);
+            var index = 0;
+
+            // Move all files to TEMP folder first with index for each.
+            foreach (var file in files)
+            {
+                var newFileName = string.Empty;
+                if (picExtensions.Contains(Path.GetExtension(file).ToLower()))
+                    File.Move(file, path + "\\TEMP\\" + ++index + ".jpg");
+            }
+
+            // Move files from TEMP folder back to root folder.
+            index = 0;
+            files = Directory.GetFiles(path + "\\TEMP");
+            foreach (var file in files)
+                File.Move(file, path + "\\" + ++index + ".jpg");
+
+            // Remove TEMP folder
+            Directory.Delete(path + "\\TEMP");
+
+            return true;
         }
 
         private static void ReorderFiles(string path)
@@ -272,6 +283,7 @@ namespace File_Organizer
         {
             var files = Directory.GetFiles(SelectedPath);
             var count = files.Length;
+            var random = new Random();
             DisplayedImagePath = files[random.Next(count)];
             ++current;
             OnPropertyChanged(nameof(Progress));
@@ -298,8 +310,8 @@ namespace File_Organizer
         {
             if (!Deserialize())
             {
-                if (MessageBox.Show("No people.xml file found. Update people.xml?",
-                                    "Update people.xml", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                if (System.Windows.MessageBox.Show("No people.xml file found. Update people.xml?",
+                                    "Update people.xml", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     UpdatePeople();
                 else
                     return;

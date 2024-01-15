@@ -184,21 +184,21 @@ namespace File_Organizer
         /// False if the user chooses not to delete the temp folder.
         /// Otherwise, true.
         /// </returns>
-        private bool GrabAllFiles(string? folder = null)
+        private bool GrabAllFiles(string? path = null)
         {
-            folder ??= CollectionPath;
+            path ??= CollectionPath;
 
-            if (Directory.Exists(folder + "\\TEMP"))
+            if (Directory.Exists(path + "\\TEMP"))
             {
                 if (MessageBox.Show("Temp folder already exists. Delete it? ", "Temp Folder Conflict",
                                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                     return false;
                 else
-                    Directory.Delete(folder + "\\TEMP");
+                    Directory.Delete(path + "\\TEMP");
             }
 
-            Directory.CreateDirectory(folder + "\\TEMP");
-            var files = Directory.GetFiles(folder, "*", searchOption: SearchOption.AllDirectories);
+            Directory.CreateDirectory(path + "\\TEMP");
+            var files = Directory.GetFiles(path, "*", searchOption: SearchOption.AllDirectories);
             var index = 0;
 
             // Move all files to TEMP folder first to avoid conflicts.
@@ -209,12 +209,12 @@ namespace File_Organizer
                     newFileName = $"{++index}.jpg";
                 else
                     newFileName = $"{++index}{Path.GetExtension(file).ToLower()}";
-                File.Move(file, folder + "\\TEMP\\" + newFileName);
+                File.Move(file, path + "\\TEMP\\" + newFileName);
             }
 
             // Move files from TEMP folder to root folder.
             index = 0;
-            files = Directory.GetFiles(folder + "\\TEMP");
+            files = Directory.GetFiles(path + "\\TEMP");
             foreach (var file in files)
             {
                 var newFileName = string.Empty;
@@ -222,11 +222,11 @@ namespace File_Organizer
                     newFileName = $"{++index}.jpg";
                 else
                     newFileName = $"{++index}{Path.GetExtension(file).ToLower()}";
-                File.Move(file, folder + "\\" + newFileName);
+                File.Move(file, path + "\\" + newFileName);
             }
 
             // Remove subdirectories
-            foreach (var subDirectory in Directory.GetDirectories(folder))
+            foreach (var subDirectory in Directory.GetDirectories(path))
                 Directory.Delete(subDirectory, true);
 
             return true;
