@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -137,6 +136,8 @@ namespace File_Organizer
 
         private async Task OrganizeAsync(string path, int numOfThread = 10)
         {
+            // Todo: Add progress bar
+
             if (path == string.Empty)
                 return;
 

@@ -4,11 +4,11 @@
         xmlns:d="clr-namespace:File_Organizer"
         Title="File Organizer" Height="600" Width="1000" >
     <Grid Background="Pink">
-        <TabControl FontSize="20">
-            <TabItem Header="Organizer">
+        <TabControl FontSize="30" FontFamily="Comic Sans MS">
+            <TabItem Header="Organizer" Margin="150,0,-290,0">
                 <d:OrganizerUserControl />
             </TabItem>
-            <TabItem Header="Selector">
+            <TabItem Header="Selector" Margin="403,-1,-543,1">
                 <d:SelectorUserControl />
             </TabItem>
         </TabControl>
