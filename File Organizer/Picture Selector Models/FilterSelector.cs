@@ -2,9 +2,9 @@
 
 namespace File_Organizer
 {
-    public class PictureFilterSelector : IPictureSelector
+    public class FilterSelector : ISelector
     {
-        public PictureFilterSelector(string selectedPath)
+        public FilterSelector(string selectedPath)
         {
             CollectionPath = selectedPath;
         }

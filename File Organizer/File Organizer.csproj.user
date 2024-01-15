@@ -10,7 +10,7 @@
     <Compile Update="OrganizerUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="PictureSelectorUserControl.xaml.cs">
+    <Compile Update="SelectorUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -21,7 +21,7 @@
     <Page Update="OrganizerUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="PictureSelectorUserControl.xaml">
+    <Page Update="SelectorUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

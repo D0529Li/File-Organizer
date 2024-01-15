@@ -6,28 +6,6 @@
              xmlns:local="clr-namespace:File_Organizer"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <Style x:Key="SideButtonStyle" TargetType="Button">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="FontFamily" Value="Times New Roman" />
-            <Setter Property="Margin" Value="0,5,0,5" />
-            <Setter Property="Padding" Value="0,15,0,15" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="Background" Value="LightBlue" />
-        </Style>
-        <Style x:Key="PictureSelectorButtonStyle" TargetType="Button">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="FontFamily" Value="Times New Roman" />
-            <Setter Property="Margin" Value="0,0,15,0" />
-            <Setter Property="Padding" Value="30,0,30,0" />
-            <Setter Property="DockPanel.Dock" Value="Right" />
-        </Style>
-        <Style x:Key="PictureSelectorModeButtonStyle" TargetType="RadioButton">
-            <Setter Property="FontFamily" Value="Times New Roman" />
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="Margin" Value="10" />
-        </Style>
-    </UserControl.Resources>
     <Grid Background="Pink">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

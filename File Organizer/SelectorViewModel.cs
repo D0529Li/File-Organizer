@@ -15,9 +15,9 @@ namespace File_Organizer
         FolderFilterMode
     }
 
-    public class PictureSelectorViewModel : INotifyPropertyChanged
+    public class SelectorViewModel : INotifyPropertyChanged
     {
-        public string CurrentImagePath { get { return pictureSelector?.ImagePath ?? string.Empty; } }
+        public string CurrentImagePath { get { return selector?.ImagePath ?? string.Empty; } }
 
         public BitmapImage? CurrentImage
         {
@@ -45,9 +45,9 @@ namespace File_Organizer
             {
                 if (SelectedMode == FilterMode.FolderFilterMode)
                 {
-                    return $"{pictureSelector?.GetRemainingCount()} remaining folders";
+                    return $"{selector?.GetRemainingCount()} remaining folders";
                 }
-                return $"{pictureSelector?.GetRemainingCount()} remaining pictures";
+                return $"{selector?.GetRemainingCount()} remaining pictures";
             }
         }
 
@@ -92,7 +92,7 @@ namespace File_Organizer
 
         private bool _isStarted = false;
 
-        private IPictureSelector? pictureSelector;
+        private ISelector? selector;
 
         #region Commands
 
@@ -112,7 +112,7 @@ namespace File_Organizer
 
         #endregion
 
-        public PictureSelectorViewModel(string selectedPath)
+        public SelectorViewModel(string selectedPath)
         {
             ChooseFolderCommand = new DelegateCommand<object>(OnChooseFolder);
             StartCommand = new DelegateCommand<object>(OnStart);
@@ -167,19 +167,19 @@ namespace File_Organizer
             switch (SelectedMode)
             {
                 case FilterMode.PicFilterMode:
-                    pictureSelector = new PictureFilterSelector(SelectedPath);
+                    selector = new FilterSelector(SelectedPath);
                     break;
                 case FilterMode.WallpaperMode:
-                    pictureSelector = new WallpaperSelector(SelectedPath);
+                    selector = new WallpaperSelector(SelectedPath);
                     break;
                 case FilterMode.FolderFilterMode:
-                    pictureSelector = new FolderFilterSelector(SelectedPath);
+                    selector = new FolderFilterSelector(SelectedPath);
                     break;
             }
 
             try
             {
-                if (pictureSelector == null || !pictureSelector.Start())
+                if (selector == null || !selector.Start())
                     return;
             }
             catch (ArgumentOutOfRangeException)
@@ -195,14 +195,14 @@ namespace File_Organizer
 
         private void OnStop(object _)
         {
-            pictureSelector?.Stop();
+            selector?.Stop();
             IsStarted = false;
             RefreshImage();
         }
 
         private void OnSeeMore(object _)
         {
-            pictureSelector?.NextRandom();
+            selector?.NextRandom();
             RefreshImage();
         }
 
@@ -210,7 +210,7 @@ namespace File_Organizer
         {
             try
             {
-                pictureSelector?.Previous();
+                selector?.Previous();
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -237,7 +237,7 @@ namespace File_Organizer
 
         private void OnCommit(object _)
         {
-            Task.Run(() => pictureSelector?.Commit());
+            Task.Run(() => selector?.Commit());
         }
 
         private void OnOpenFolder(object _)
@@ -251,10 +251,10 @@ namespace File_Organizer
         private void KeepOrDrop(bool keep, bool skip = false) // to be modified
         {
             if (!skip)
-                pictureSelector?.AddCommitItem(keep);
+                selector?.AddCommitItem(keep);
             try
             {
-                pictureSelector?.Next();
+                selector?.Next();
             }
             catch (ArgumentOutOfRangeException)
             {

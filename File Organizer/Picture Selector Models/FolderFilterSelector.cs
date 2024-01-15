@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace File_Organizer
 {
-    public class FolderFilterSelector : IPictureSelector
+    public class FolderFilterSelector : ISelector
     {
         private List<string> folderPaths = new List<string>();
         private int folderIndex = 0;

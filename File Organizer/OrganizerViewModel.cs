@@ -16,7 +16,7 @@ namespace File_Organizer
 
         private const string DEFAULT_SELECTED_PATH = "D:\\123\\test";
         private const string DEFAULT_VIDEO_COLLECTION_PATH = "G:\\123";
-        private const string DEFAULT_XML_PATH = "D:\\File Organizer\\File Organizer\\File Organizer\\bin\\Debug\\net8.0-windows\\people.xml";
+        private const string DEFAULT_XML_PATH = "C:\\Github\\File-Organizer\\File Organizer\\bin\\Debug\\net8.0-windows\\people.xml";
 
         #endregion
 

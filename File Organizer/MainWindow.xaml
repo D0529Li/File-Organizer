@@ -9,7 +9,7 @@
                 <d:OrganizerUserControl />
             </TabItem>
             <TabItem Header="Selector">
-                <d:PictureSelectorUserControl />
+                <d:SelectorUserControl />
             </TabItem>
         </TabControl>
     </Grid>

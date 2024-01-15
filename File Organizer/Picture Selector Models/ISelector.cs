@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace File_Organizer
 {
-    public abstract class IPictureSelector
+    public abstract class ISelector
     {
         protected readonly Dictionary<int, bool> commitList = new Dictionary<int, bool>();
         protected string CollectionPath { get; set; } = string.Empty;

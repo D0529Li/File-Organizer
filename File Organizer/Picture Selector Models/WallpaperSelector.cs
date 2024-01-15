@@ -2,7 +2,7 @@
 
 namespace File_Organizer
 {
-    public class WallpaperSelector : IPictureSelector
+    public class WallpaperSelector : ISelector
     {
         private const string DEFAULT_WALLPAPER_PATH = "D:\\123\\test\\Wallpapers";
 
