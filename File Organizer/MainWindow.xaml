@@ -2,13 +2,13 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="clr-namespace:File_Organizer"
-        Title="File Organizer" Height="600" Width="1000" >
+        Title="File Organizer" Height="600" Width="1100" >
     <Grid Background="Pink">
         <TabControl FontSize="30" FontFamily="Comic Sans MS">
             <TabItem Header="Organizer" Margin="150,0,-290,0">
                 <d:OrganizerUserControl />
             </TabItem>
-            <TabItem Header="Selector" Margin="403,-1,-543,1">
+            <TabItem Header="Selector" Margin="400,0,-550,1">
                 <d:SelectorUserControl />
             </TabItem>
         </TabControl>

@@ -17,7 +17,7 @@
             <Style x:Key="SelectorButtonStyle" TargetType="Button">
                 <Setter Property="FontSize" Value="20" />
                 <Setter Property="Margin" Value="0,0,15,0" />
-                <Setter Property="Padding" Value="30,0,30,0" />
+                <Setter Property="Padding" Value="30,15,30,15" />
                 <Setter Property="DockPanel.Dock" Value="Right" />
             </Style>
             <Style x:Key="SelectorModeButtonStyle" TargetType="RadioButton">
