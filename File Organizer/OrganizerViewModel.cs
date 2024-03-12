@@ -167,27 +167,11 @@ namespace File_Organizer
                 var image = Image.FromStream(stream, false, false);
                 stream.Close();
                 if (image.Width > image.Height)
-                    lock (lockHor)
-                        File.Move(file, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
+                    MoveHorizontal(file, ref lockHor, dirHor, dirName, indexHor);
                 else
-                    lock (lockVer)
-                        File.Move(file, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
+                    MoveVertical(file, ref lockVer, dirVer, dirName, indexVer);
                 image.Dispose();
             });
-
-            //// Organize single-threaded
-            //foreach (var fileFullName in Directory.EnumerateFiles(path))
-            //{
-            //    var stream = File.OpenRead(fileFullName);
-            //    var image = Image.FromStream(stream, false, false);
-            //    stream.Close();
-
-            //    if (image.Width > image.Height)
-            //        File.Move(fileFullName, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
-            //    else
-            //        File.Move(fileFullName, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
-            //    image.Dispose();
-            //}
         }
 
         private void OnOrganize(object _)
@@ -232,6 +216,55 @@ namespace File_Organizer
             Directory.Delete(path + "\\TEMP");
 
             return true;
+        }
+
+        private static int MoveHorizontal(string file, ref object lockHor, DirectoryInfo dirHor, string dirName, int indexHor)
+        {
+            bool pass = false;
+
+            lock (lockHor)
+            {
+                try
+                {
+                    File.Move(file, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
+                    pass = true;
+                }
+                catch (IOException ex)
+                {
+                    if (ex.Message != "Cannot create a file when that file already exists.")
+                        throw;
+                }
+            }
+
+            if (!pass)
+                MoveHorizontal(file, ref lockHor, dirHor, dirName, indexHor);
+
+            return indexHor;
+
+        }
+
+        private static int MoveVertical(string file, ref object lockVer, DirectoryInfo dirVer, string dirName, int indexVer)
+        {
+            bool pass = false;
+
+            lock (lockVer)
+            {
+                try
+                {
+                    File.Move(file, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
+                    pass = true;
+                }
+                catch (IOException ex)
+                {
+                    if (ex.Message != "Cannot create a file when that file already exists.")
+                        throw;
+                }
+            }
+
+            if (!pass)
+                MoveVertical(file, ref lockVer, dirVer, dirName, indexVer);
+
+            return indexVer;
         }
 
         private static void UncheckReadonlyOnFiles(string path)
