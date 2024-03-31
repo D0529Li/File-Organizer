@@ -142,36 +142,48 @@ namespace File_Organizer
             if (path == string.Empty)
                 return;
 
-            var dirName = Path.GetFileName(path);
-            var dirHor = Directory.CreateDirectory($"{path}\\{dirName} 横屏");
-            var dirVer = Directory.CreateDirectory($"{path}\\{dirName} 竖屏");
-            var indexHor = Directory.GetFiles(dirHor.FullName).Length;
-            var indexVer = Directory.GetFiles(dirVer.FullName).Length;
-            var lockHor = new object();
-            var lockVer = new object();
-
-            // Prep: Reorder existing files and uncheck readonly
-            var task1 = Task.Run(() => ReorderFiles(dirHor.FullName));
-            var task2 = Task.Run(() => ReorderFiles(dirVer.FullName));
-            await Task.WhenAll(task1, task2);
-            await Task.Run(() => UncheckReadonlyOnFiles(path));
-
-            // Prep: Rename all files to .jpg
-            RenamePicExtensions(path);
-
-            // Organize multi-threaded
-            var files = Directory.GetFiles(path);
-            Parallel.ForEach(files, file =>
+            try
             {
-                var stream = File.OpenRead(file);
-                var image = Image.FromStream(stream, false, false);
-                stream.Close();
-                if (image.Width > image.Height)
-                    MoveHorizontal(file, ref lockHor, dirHor, dirName, indexHor);
-                else
-                    MoveVertical(file, ref lockVer, dirVer, dirName, indexVer);
-                image.Dispose();
-            });
+                var dirName = Path.GetFileName(path);
+                var dirHor = Directory.CreateDirectory($"{path}\\{dirName} 横屏");
+                var dirVer = Directory.CreateDirectory($"{path}\\{dirName} 竖屏");
+                var indexHor = Directory.GetFiles(dirHor.FullName).Length;
+                var indexVer = Directory.GetFiles(dirVer.FullName).Length;
+                var lockHor = new object();
+                var lockVer = new object();
+
+                // Prep: Reorder existing files and uncheck readonly
+                var task1 = Task.Run(() => ReorderFiles(dirHor.FullName));
+                var task2 = Task.Run(() => ReorderFiles(dirVer.FullName));
+                await Task.WhenAll(task1, task2);
+                await Task.Run(() => UncheckReadonlyOnFiles(path));
+
+                // Prep: Rename all files to .jpg
+                RenamePicExtensions(path);
+
+                // Organize multi-threaded
+                var files = Directory.GetFiles(path);
+                Parallel.ForEach(files, file =>
+                {
+                    if (!file.EndsWith(".jpg"))
+                        return;
+
+                    var stream = File.OpenRead(file);
+                    var image = Image.FromStream(stream, false, false);
+                    stream.Close();
+                    if (image.Width > image.Height)
+                        MoveHorizontal(file, ref lockHor, dirHor, dirName, indexHor);
+                    else
+                        MoveVertical(file, ref lockVer, dirVer, dirName, indexVer);
+                    image.Dispose();
+                });
+
+                System.Windows.MessageBox.Show($"Organize \"{dirName}\" completed.", "Organize Completed", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void OnOrganize(object _)
