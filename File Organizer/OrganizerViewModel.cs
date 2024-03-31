@@ -78,7 +78,6 @@ namespace File_Organizer
             OnPropertyChanged(nameof(SelectedPath));
         }
 
-
         #region Private Methods
 
         private void OnStartStopButtonClick(object _)

@@ -17,6 +17,18 @@ namespace File_Organizer
 
     public class SelectorViewModel : INotifyPropertyChanged
     {
+        #region Fields
+
+        private FilterMode _selectedMode;
+
+        private bool _isStarted = false;
+
+        private ISelector? selector;
+
+        #endregion
+
+        #region Properties
+
         public string CurrentImagePath { get { return selector?.ImagePath ?? string.Empty; } }
 
         public BitmapImage? CurrentImage
@@ -66,6 +78,7 @@ namespace File_Organizer
         }
 
         public string SelectedPath { get; set; }
+
         public string DisplayedPath
         {
             get
@@ -88,11 +101,7 @@ namespace File_Organizer
             }
         }
 
-        private FilterMode _selectedMode;
-
-        private bool _isStarted = false;
-
-        private ISelector? selector;
+        #endregion
 
         #region Commands
 
@@ -133,6 +142,8 @@ namespace File_Organizer
 
             OnPropertyChanged(nameof(DisplayedPath));
         }
+
+        #region Private Methods
 
         private void OnChooseFolder(object _)
         {
@@ -287,6 +298,8 @@ namespace File_Organizer
             OnPropertyChanged(nameof(DisplayedPath));
             OnPropertyChanged(nameof(RemainingCountText));
         }
+
+        #endregion
 
         #region INotifyPropertyChanged Implements
 
