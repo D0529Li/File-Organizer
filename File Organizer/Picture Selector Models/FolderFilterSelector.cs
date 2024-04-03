@@ -55,6 +55,14 @@ namespace File_Organizer
                     foreach (var file in Directory.GetFiles(folderPaths[commitItem.Key]))
                         File.Move(file, $"{file[..file.LastIndexOf('\\')]} ({++index}){Path.GetExtension(file).ToLower()}");
                 }
+                else
+                {
+                    var index = 0;
+                    foreach (var file in Directory.GetFiles(folderPaths[commitItem.Key]))
+                        if (!PicExtensions.Contains(Path.GetExtension(file).ToLower()))
+                            File.Move(file, $"{file[..file.LastIndexOf('\\')]} ({++index}){Path.GetExtension(file).ToLower()}");
+                }
+
                 foreach (var file in Directory.GetFiles(folderPaths[commitItem.Key], "*", SearchOption.AllDirectories))
                     File.SetAttributes(file, FileAttributes.Normal);
                 Directory.Delete(folderPaths[commitItem.Key], true);
