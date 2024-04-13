@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Aspose.Zip;
+using Aspose.Zip.Rar;
+using Aspose.Zip.SevenZip;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -9,11 +12,18 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Xml.Serialization;
+using MSGBOX = System.Windows.MessageBox;
 
 namespace File_Organizer
 {
     public class OrganizerViewModel : INotifyPropertyChanged
     {
+        #region Constants
+
+        List<string> ZIP_PASSWORDS = ["www.facg.ru", "www.zcys.me", "www.tubiluo.com"];
+
+        #endregion
+
         #region Fields
 
         private readonly System.Timers.Timer timer = new System.Timers.Timer(2000);
@@ -59,6 +69,7 @@ namespace File_Organizer
         public ICommand OrganizeCommand { get; set; }
         public ICommand UpdatePeopleCommand { get; set; }
         public ICommand DrawCommand { get; set; }
+        public ICommand UnZipCommand { get; set; }
         public ICommand MuteButtonClickCommand { get; set; }
 
         #endregion
@@ -70,6 +81,7 @@ namespace File_Organizer
             OrganizeCommand = new DelegateCommand<object>(OnOrganize);
             UpdatePeopleCommand = new DelegateCommand<object>(OnUpdatePeople);
             DrawCommand = new DelegateCommand<object>(OnDraw);
+            UnZipCommand = new DelegateCommand<object>(OnUnZip);
             MuteButtonClickCommand = new DelegateCommand<object>(OnMuteButtonClick);
 
             SelectedPath = Constants.DEFAULT_SELECTED_PATH;
@@ -78,7 +90,7 @@ namespace File_Organizer
             OnPropertyChanged(nameof(SelectedPath));
         }
 
-        #region Private Methods
+        #region Command Methods
 
         private void OnStartStopButtonClick(object _)
         {
@@ -117,6 +129,135 @@ namespace File_Organizer
         {
             UpdatePeople();
         }
+
+        private void OnOrganize(object _)
+        {
+            Task.Run(() => OrganizeAsync(SelectedPath));
+        }
+
+        private void OnDraw(object _)
+        {
+            if (!Deserialize())
+            {
+                if (MSGBOX.Show("No people.xml file found. Update people.xml?",
+                                    "Update people.xml", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                    UpdatePeople();
+                else
+                    return;
+            }
+
+            var drawnPerson = people.DrawPerson();
+
+            if (drawnPerson.IsFolder)
+            {
+                var random = new Random();
+                var index = random.Next(drawnPerson.NumOfFiles);
+                DisplayedVideoPath = Directory.GetFiles(Constants.DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name)[index];
+            }
+            else
+            {
+                DisplayedVideoPath = Constants.DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name + ".mp4";
+            }
+            IsMuteButtonVisible = true;
+            OnPropertyChanged(nameof(IsMuteButtonVisible));
+            OnPropertyChanged(nameof(DisplayedVideoPath));
+            OnPropertyChanged(nameof(DisplayedVideoName));
+        }
+
+        private void OnUnZip(object _)
+        {
+            foreach (var file in Directory.GetFiles(SelectedPath, "*", searchOption: SearchOption.TopDirectoryOnly))
+            {
+                // Zip
+                if (file.EndsWith(".zip"))
+                {
+                    Archive? zipFile = null;
+
+                    foreach (var password in ZIP_PASSWORDS)
+                    {
+                        try
+                        {
+                            zipFile = new Archive(file, new ArchiveLoadOptions { DecryptionPassword = password });
+                            break;
+                        }
+                        catch { }
+                    }
+
+                    if (zipFile == null)
+                    {
+                        try
+                        {
+                            zipFile = new Archive(file);
+                            zipFile.ExtractToDirectory($"{SelectedPath}");
+                        }
+                        catch
+                        {
+                            MSGBOX.Show($"Cannot unzip file \"{file}\" .", "Unzip failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
+                // 7z
+                else if (file.EndsWith(".7z"))
+                {
+                    SevenZipArchive? zipFile = null;
+
+                    foreach (var password in ZIP_PASSWORDS)
+                    {
+                        try
+                        {
+                            zipFile = new SevenZipArchive(file, password);
+                            break;
+                        }
+                        catch { }
+                    }
+
+                    if (zipFile == null)
+                    {
+                        try
+                        {
+                            zipFile = new SevenZipArchive(file);
+                            zipFile.ExtractToDirectory($"{SelectedPath}");
+                        }
+                        catch
+                        {
+                            MSGBOX.Show($"Cannot unzip file \"{file}\" .", "Unzip failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
+                // rar
+                else if (file.EndsWith(".rar"))
+                {
+                    RarArchive? zipFile = null;
+
+                    foreach (var password in ZIP_PASSWORDS)
+                    {
+                        try
+                        {
+                            zipFile = new RarArchive(file, new RarArchiveLoadOptions { DecryptionPassword = password });
+                            break;
+                        }
+                        catch { }
+                    }
+
+                    if (zipFile == null)
+                    {
+                        try
+                        {
+                            zipFile = new RarArchive(file);
+                            zipFile.ExtractToDirectory($"{SelectedPath}");
+                        }
+                        catch
+                        {
+                            MSGBOX.Show($"Cannot unzip file \"{file}\" .", "Unzip failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
 
         private void UpdatePeople()
         {
@@ -177,17 +318,12 @@ namespace File_Organizer
                     image.Dispose();
                 });
 
-                System.Windows.MessageBox.Show($"Organize \"{dirName}\" completed.", "Organize Completed", MessageBoxButton.OK, MessageBoxImage.Information);
+                MSGBOX.Show($"Organize \"{dirName}\" completed.", "Organize Completed", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MSGBOX.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private void OnOrganize(object _)
-        {
-            Task.Run(() => OrganizeAsync(SelectedPath));
         }
 
         private bool RenamePicExtensions(string path)
@@ -361,35 +497,6 @@ namespace File_Organizer
                 people = (People)deserializedPeople;
             }
             return true;
-        }
-
-        private void OnDraw(object _)
-        {
-            if (!Deserialize())
-            {
-                if (System.Windows.MessageBox.Show("No people.xml file found. Update people.xml?",
-                                    "Update people.xml", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                    UpdatePeople();
-                else
-                    return;
-            }
-
-            var drawnPerson = people.DrawPerson();
-
-            if (drawnPerson.IsFolder)
-            {
-                var random = new Random();
-                var index = random.Next(drawnPerson.NumOfFiles);
-                DisplayedVideoPath = Directory.GetFiles(Constants.DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name)[index];
-            }
-            else
-            {
-                DisplayedVideoPath = Constants.DEFAULT_VIDEO_COLLECTION_PATH + "\\" + drawnPerson.Name + ".mp4";
-            }
-            IsMuteButtonVisible = true;
-            OnPropertyChanged(nameof(IsMuteButtonVisible));
-            OnPropertyChanged(nameof(DisplayedVideoPath));
-            OnPropertyChanged(nameof(DisplayedVideoName));
         }
 
         #endregion

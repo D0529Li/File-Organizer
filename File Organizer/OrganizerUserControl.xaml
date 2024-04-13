@@ -28,11 +28,12 @@
         </Grid>
 
         <StackPanel Orientation="Vertical" Grid.Column="1">
-            <TextBlock Text="{Binding SelectedPath}" Height="38" Background="LightBlue" FontSize="20" VerticalAlignment="Center" TextAlignment="Center" MinWidth="130" MaxWidth="260" Padding="10,0,10,0"/>
+            <TextBlock Text="{Binding SelectedPath}" Height="38" Background="LightBlue" FontSize="20" VerticalAlignment="Center" TextAlignment="Center" MinWidth="130" MaxWidth="260" Padding="10,0,10,0" />
             <Button Content="Select a directory" Command="{Binding SelectDirectoryCommand}" Style="{StaticResource SideButtonStyle}" />
             <Button Content="Organize" Command="{Binding OrganizeCommand}" Style="{StaticResource SideButtonStyle}" />
             <Button Content="Update People" Command="{Binding UpdatePeopleCommand}" Style="{StaticResource SideButtonStyle}" />
-            <Button Content="Draw" Command="{Binding DrawCommand}" Style="{StaticResource SideButtonStyle}"/>
+            <Button Content="Draw" Command="{Binding DrawCommand}" Style="{StaticResource SideButtonStyle}" />
+            <Button Content="Unzip" Command="{Binding UnZipCommand}" Style="{StaticResource SideButtonStyle}" />
         </StackPanel>
     </Grid>
 </UserControl>
