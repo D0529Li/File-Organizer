@@ -33,7 +33,6 @@
             <Button Content="Organize" Command="{Binding OrganizeCommand}" Style="{StaticResource SideButtonStyle}" />
             <Button Content="Update People" Command="{Binding UpdatePeopleCommand}" Style="{StaticResource SideButtonStyle}" />
             <Button Content="Draw" Command="{Binding DrawCommand}" Style="{StaticResource SideButtonStyle}" />
-            <Button Content="Unzip" Command="{Binding UnZipCommand}" Style="{StaticResource SideButtonStyle}" />
         </StackPanel>
     </Grid>
 </UserControl>

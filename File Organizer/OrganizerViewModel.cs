@@ -18,12 +18,6 @@ namespace File_Organizer
 {
     public class OrganizerViewModel : INotifyPropertyChanged
     {
-        #region Constants
-
-        List<string> ZIP_PASSWORDS = ["www.facg.ru", "www.zcys.me", "www.tubiluo.com"];
-
-        #endregion
-
         #region Fields
 
         private readonly System.Timers.Timer timer = new System.Timers.Timer(2000);
@@ -69,7 +63,6 @@ namespace File_Organizer
         public ICommand OrganizeCommand { get; set; }
         public ICommand UpdatePeopleCommand { get; set; }
         public ICommand DrawCommand { get; set; }
-        public ICommand UnZipCommand { get; set; }
         public ICommand MuteButtonClickCommand { get; set; }
 
         #endregion
@@ -81,7 +74,6 @@ namespace File_Organizer
             OrganizeCommand = new DelegateCommand<object>(OnOrganize);
             UpdatePeopleCommand = new DelegateCommand<object>(OnUpdatePeople);
             DrawCommand = new DelegateCommand<object>(OnDraw);
-            UnZipCommand = new DelegateCommand<object>(OnUnZip);
             MuteButtonClickCommand = new DelegateCommand<object>(OnMuteButtonClick);
 
             SelectedPath = Constants.DEFAULT_SELECTED_PATH;
@@ -164,97 +156,6 @@ namespace File_Organizer
             OnPropertyChanged(nameof(DisplayedVideoName));
         }
 
-        private void OnUnZip(object _)
-        {
-            foreach (var file in Directory.GetFiles(SelectedPath, "*", searchOption: SearchOption.TopDirectoryOnly))
-            {
-                // Zip
-                if (file.EndsWith(".zip"))
-                {
-                    Archive? zipFile = null;
-
-                    foreach (var password in ZIP_PASSWORDS)
-                    {
-                        try
-                        {
-                            zipFile = new Archive(file, new ArchiveLoadOptions { DecryptionPassword = password });
-                            break;
-                        }
-                        catch { }
-                    }
-
-                    if (zipFile == null)
-                    {
-                        try
-                        {
-                            zipFile = new Archive(file);
-                            zipFile.ExtractToDirectory($"{SelectedPath}");
-                        }
-                        catch
-                        {
-                            MSGBOX.Show($"Cannot unzip file \"{file}\" .", "Unzip failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                    }
-                }
-                // 7z
-                else if (file.EndsWith(".7z"))
-                {
-                    SevenZipArchive? zipFile = null;
-
-                    foreach (var password in ZIP_PASSWORDS)
-                    {
-                        try
-                        {
-                            zipFile = new SevenZipArchive(file, password);
-                            break;
-                        }
-                        catch { }
-                    }
-
-                    if (zipFile == null)
-                    {
-                        try
-                        {
-                            zipFile = new SevenZipArchive(file);
-                            zipFile.ExtractToDirectory($"{SelectedPath}");
-                        }
-                        catch
-                        {
-                            MSGBOX.Show($"Cannot unzip file \"{file}\" .", "Unzip failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                    }
-                }
-                // rar
-                else if (file.EndsWith(".rar"))
-                {
-                    RarArchive? zipFile = null;
-
-                    foreach (var password in ZIP_PASSWORDS)
-                    {
-                        try
-                        {
-                            zipFile = new RarArchive(file, new RarArchiveLoadOptions { DecryptionPassword = password });
-                            break;
-                        }
-                        catch { }
-                    }
-
-                    if (zipFile == null)
-                    {
-                        try
-                        {
-                            zipFile = new RarArchive(file);
-                            zipFile.ExtractToDirectory($"{SelectedPath}");
-                        }
-                        catch
-                        {
-                            MSGBOX.Show($"Cannot unzip file \"{file}\" .", "Unzip failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                    }
-                }
-            }
-        }
-
         #endregion
 
         #region Private Methods
@@ -308,14 +209,25 @@ namespace File_Organizer
                     if (!file.EndsWith(".jpg"))
                         return;
 
-                    var stream = File.OpenRead(file);
-                    var image = Image.FromStream(stream, false, false);
-                    stream.Close();
-                    if (image.Width > image.Height)
-                        MoveHorizontal(file, ref lockHor, dirHor, dirName, indexHor);
-                    else
-                        MoveVertical(file, ref lockVer, dirVer, dirName, indexVer);
-                    image.Dispose();
+                    FileStream? stream = null;
+                    Image? image = null;
+
+                    try
+                    {
+                        stream = File.OpenRead(file);
+                        image = Image.FromStream(stream, false, false);
+                        stream?.Close();
+
+                        if (image.Width > image.Height)
+                            indexHor = MoveHorizontal(file, ref lockHor, dirHor, dirName, indexHor);
+                        else
+                            indexVer = MoveVertical(file, ref lockVer, dirVer, dirName, indexVer);
+                    }
+                    catch (ArgumentException) { }
+                    finally
+                    {
+                        image?.Dispose();
+                    }
                 });
 
                 MSGBOX.Show($"Organize \"{dirName}\" completed.", "Organize Completed", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -373,7 +285,8 @@ namespace File_Organizer
             {
                 try
                 {
-                    File.Move(file, $"{dirHor}\\{dirName} 横屏 ({++indexHor}).jpg");
+                    ++indexHor;
+                    File.Move(file, $"{dirHor}\\{dirName} 横屏 ({indexHor}).jpg");
                     pass = true;
                 }
                 catch (IOException ex)
@@ -398,7 +311,8 @@ namespace File_Organizer
             {
                 try
                 {
-                    File.Move(file, $"{dirVer}\\{dirName} 竖屏 ({++indexVer}).jpg");
+                    ++indexVer;
+                    File.Move(file, $"{dirVer}\\{dirName} 竖屏 ({indexVer}).jpg");
                     pass = true;
                 }
                 catch (IOException ex)
