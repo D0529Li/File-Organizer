@@ -10,7 +10,7 @@ namespace File_Organizer
         public OrganizerUserControl()
         {
             InitializeComponent();
-            DataContext = new OrganizerViewModel();
+            DataContext = Global.OrganizerViewModel = new OrganizerViewModel();
         }
     }
 }

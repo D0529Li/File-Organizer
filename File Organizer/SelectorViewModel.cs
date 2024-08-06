@@ -77,7 +77,18 @@ namespace File_Organizer
             get { return SelectedMode == FilterMode.FolderFilterMode; }
         }
 
-        public string SelectedPath { get; set; }
+        public string SelectedPath
+        {
+            get
+            {
+                return Global.SelectedPath;
+            }
+            set
+            {
+                if (value != null)
+                    Global.SelectedPath = value;
+            }
+        }
 
         public string DisplayedPath
         {
@@ -121,7 +132,7 @@ namespace File_Organizer
 
         #endregion
 
-        public SelectorViewModel(string selectedPath)
+        public SelectorViewModel()
         {
             ChooseFolderCommand = new DelegateCommand<object>(OnChooseFolder);
             StartCommand = new DelegateCommand<object>(OnStart);
@@ -137,9 +148,16 @@ namespace File_Organizer
             WallpaperModeSelectedCommand = new DelegateCommand<object>(OnWallpaperModeSelected);
             FolderFilterModeSelectedCommand = new DelegateCommand<object>(OnFolderFilterModeSelected);
 
-            SelectedPath = selectedPath;
             SelectedMode = FilterMode.FolderFilterMode;
 
+            OnPropertyChanged(nameof(DisplayedPath));
+        }
+
+        /// <summary>
+        /// For Global class to update the path
+        /// </summary>
+        public void UpdatePath()
+        {
             OnPropertyChanged(nameof(DisplayedPath));
         }
 

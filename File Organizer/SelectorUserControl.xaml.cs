@@ -10,7 +10,7 @@ namespace File_Organizer
         public SelectorUserControl()
         {
             InitializeComponent();
-            DataContext = new SelectorViewModel(Constants.DEFAULT_SELECTED_PATH);
+            DataContext = Global.SelectorViewModel = new SelectorViewModel();
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using Aspose.Zip;
-using Aspose.Zip.Rar;
-using Aspose.Zip.SevenZip;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -35,7 +32,18 @@ namespace File_Organizer
             get { return $"{current} / {total} {Math.Round((double)current * 100 / total, 2)}%"; }
         }
 
-        public string SelectedPath { get; set; } = Constants.DEFAULT_SELECTED_PATH;
+        public string SelectedPath
+        {
+            get
+            {
+                return Global.SelectedPath;
+            }
+            set
+            {
+                if (value != null)
+                    Global.SelectedPath = value;
+            }
+        }
         public string DisplayedImagePath { get; set; } = string.Empty;
         public string DisplayedVideoPath { get; set; } = string.Empty;
         public string DisplayedVideoName
@@ -79,6 +87,14 @@ namespace File_Organizer
             SelectedPath = Constants.DEFAULT_SELECTED_PATH;
             timer.Elapsed += Timer_Elapsed;
 
+            OnPropertyChanged(nameof(SelectedPath));
+        }
+
+        /// <summary>
+        /// For Global class to update the path
+        /// </summary>
+        public void UpdatePath()
+        {
             OnPropertyChanged(nameof(SelectedPath));
         }
 
