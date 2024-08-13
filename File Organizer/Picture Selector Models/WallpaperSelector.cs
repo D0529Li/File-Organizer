@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace File_Organizer
 {
@@ -46,6 +47,11 @@ namespace File_Organizer
         public override void AddCommitItem(bool commit)
         {
             commitList[ImageIndex] = commit;
+        }
+
+        public override void AddAllCommitItems()
+        {
+            throw new NotImplementedException();
         }
     }
 }

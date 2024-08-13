@@ -35,6 +35,7 @@
                 <Button Content="Skip" Command="{Binding SkipCommand}" Style="{StaticResource SelectorButtonStyle}" Visibility="{Binding AreExtraButtonsVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                 <Button Content="{Binding DropButtonText}" Command="{Binding DropCommand}" Style="{StaticResource SelectorButtonStyle}" />
                 <Button Content="{Binding KeepButtonText}" Command="{Binding KeepCommand}" Style="{StaticResource SelectorButtonStyle}" />
+                <Button Content="{Binding KeepAllButtonText}" Command="{Binding KeepAllCommand}" Style="{StaticResource SelectorButtonStyle}" />
             </DockPanel>
 
             <TextBlock Text="{Binding DisplayedPath}" VerticalAlignment="Center" TextAlignment="Center" FontSize="25" Height="50" DockPanel.Dock="Top"/>

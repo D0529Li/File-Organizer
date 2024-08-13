@@ -101,6 +101,15 @@ namespace File_Organizer
             }
         }
 
+        public override void AddAllCommitItems()
+        {
+            while (folderIndex < folderPaths.Count)
+            {
+                AddCommitItem(true);
+                folderIndex++;
+            }
+        }
+
         /// <summary>
         /// Go to the next FOLDER (in order).
         /// </summary>

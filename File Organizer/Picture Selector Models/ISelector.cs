@@ -21,6 +21,7 @@ namespace File_Organizer
         public abstract void Stop();
         public abstract void Commit();
         public abstract void AddCommitItem(bool commit);
+        public abstract void AddAllCommitItems();
 
 
         /// <summary>

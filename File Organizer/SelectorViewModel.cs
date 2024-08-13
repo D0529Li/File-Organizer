@@ -48,6 +48,7 @@ namespace File_Organizer
             }
         }
 
+        public string KeepAllButtonText { get { return SelectedMode == FilterMode.WallpaperMode ? "" : "Keep All"; } }
         public string KeepButtonText { get { return SelectedMode == FilterMode.WallpaperMode ? "Yes" : "Keep"; } }
         public string DropButtonText { get { return SelectedMode == FilterMode.WallpaperMode ? "No" : "Drop"; } }
 
@@ -119,6 +120,7 @@ namespace File_Organizer
         public ICommand ChooseFolderCommand { get; set; }
         public ICommand StartCommand { get; set; }
         public ICommand PreviousCommand { get; set; }
+        public ICommand KeepAllCommand { get; set; }
         public ICommand KeepCommand { get; set; }
         public ICommand DropCommand { get; set; }
         public ICommand SkipCommand { get; set; }
@@ -140,6 +142,7 @@ namespace File_Organizer
             PreviousCommand = new DelegateCommand<object>(OnPrevious);
             StopCommand = new DelegateCommand<object>(OnStop);
             OpenFolderCommand = new DelegateCommand<object>(OnOpenFolder);
+            KeepAllCommand = new DelegateCommand<object>(OnKeepAll);
             KeepCommand = new DelegateCommand<object>(OnKeep);
             DropCommand = new DelegateCommand<object>(OnDrop);
             SkipCommand = new DelegateCommand<object>(OnSkip);
@@ -275,6 +278,14 @@ namespace File_Organizer
                 return;
 
             System.Diagnostics.Process.Start("explorer.exe", SelectedPath);
+        }
+
+        private void OnKeepAll(object _)
+        {
+            selector?.AddAllCommitItems();
+            RefreshImage();
+            CommitCommand.Execute(null);
+            StopCommand.Execute(null);
         }
 
         private void KeepOrDrop(bool keep, bool skip = false) // to be modified
