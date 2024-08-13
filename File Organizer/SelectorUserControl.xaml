@@ -40,7 +40,7 @@
 
             <TextBlock Text="{Binding DisplayedPath}" VerticalAlignment="Center" TextAlignment="Center" FontSize="25" Height="50" DockPanel.Dock="Top"/>
 
-            <Image Source="{Binding CurrentImage}" Stretch="Uniform" DockPanel.Dock="Bottom" Margin="10" />
+            <Image Source="{Binding CurrentImage, Converter={StaticResource NullImageConverter}}" Stretch="Uniform" DockPanel.Dock="Bottom" Margin="10" />
         </DockPanel>
     </Grid>
 </UserControl>

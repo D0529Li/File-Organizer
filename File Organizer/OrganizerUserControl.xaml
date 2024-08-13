@@ -21,7 +21,7 @@
                     <TextBlock Text="{Binding DisplayedVideoName}" VerticalAlignment="Center" TextAlignment="Center" FontSize="30"/>
                 </DockPanel>
 
-                <Image Grid.Column="0" Margin="0" Source="{Binding DisplayedImagePath}" Width="1372" Height="854" Stretch="Uniform" />
+                <Image Grid.Column="0" Margin="0" Source="{Binding DisplayedImagePath, Converter={StaticResource NullImageConverter}}" Width="1372" Height="854" Stretch="Uniform" />
             </StackPanel>
 
             <MediaElement Name="VideoControl" Margin="0,100,0,0" Source="{Binding DisplayedVideoPath}" IsMuted="{Binding IsDisplayedVideoMuted}"/>
