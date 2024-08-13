@@ -124,7 +124,7 @@ namespace File_Organizer
 
         private void OnSelectDirectory(object _)
         {
-            var dialog = new FolderBrowserDialog() { SelectedPath = SelectedPath };
+            var dialog = new FolderBrowserDialog() { InitialDirectory = SelectedPath };
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -245,6 +245,24 @@ namespace File_Organizer
                         image?.Dispose();
                     }
                 });
+
+                //Parallel.ForEach(files, file =>
+                //{
+                //    if (!file.EndsWith(".jpg")) return;
+
+                //    try
+                //    {
+                //        var size = ImageHelper.GetDimensions(file);
+                //        if (size.Width > size.Height)
+                //            indexHor = MoveHorizontal(file, ref lockHor, dirHor, dirName, indexHor);
+                //        else
+                //            indexVer = MoveVertical(file, ref lockVer, dirVer, dirName, indexVer);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        return;
+                //    }
+                //});
 
                 MSGBOX.Show($"Organize \"{dirName}\" completed.", "Organize Completed", MessageBoxButton.OK, MessageBoxImage.Information);
             }
