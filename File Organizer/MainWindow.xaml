@@ -3,14 +3,44 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="clr-namespace:File_Organizer"
         Title="File Organizer" Height="800" Width="1300" WindowStartupLocation="CenterScreen" >
-    <Grid Background="Pink">
-        <TabControl FontSize="30" FontFamily="Comic Sans MS">
-            <TabItem Header="Organizer" Width="350" Margin="100,0,-290,0">
-                <d:OrganizerUserControl />
-            </TabItem>
-            <TabItem Header="Selector" Width="350" Margin="400,0,-450,1">
-                <d:SelectorUserControl />
-            </TabItem>
-        </TabControl>
+    <Grid Background="DarkGray">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Mode" FontFamily="Times New Roman" FontSize="25" Margin="15" TextAlignment="Center" />
+                <StackPanel Orientation="Vertical">
+                    <RadioButton Content="Pic Filter" Style="{StaticResource SelectorModeButtonStyle}" Command="{Binding PicFilterModeSelectedCommand}" IsChecked="{Binding Path=IsPicFilterModeSelected, Mode=OneWay}"/>
+                    <RadioButton Content="Folder Filter" Style="{StaticResource SelectorModeButtonStyle}" Command="{Binding FolderFilterModeSelectedCommand}" IsChecked="{Binding Path=IsPicFilterModeSelected, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"/>
+                </StackPanel>
+                <Button Content="Choose folder" Command="{Binding ChooseFolderCommand}" Style="{StaticResource SideButtonStyle}" />
+                <Button Content="Start" Command="{Binding StartCommand}" Style="{StaticResource SideButtonStyle}" />
+                <Button Content="Commit" Command="{Binding CommitCommand}" Style="{StaticResource SideButtonStyle}" />
+                <Button Content="Stop" Command="{Binding StopCommand}" Style="{StaticResource SideButtonStyle}" />
+                <Button Content="Open Folder" Command="{Binding OpenFolderCommand}" Style="{StaticResource SideButtonStyle}" />
+                <Button Content="Organize" Command="{Binding OrganizeCommand}" Style="{StaticResource SideButtonStyle}" IsEnabled="{Binding IsStarted, Converter={StaticResource InverseBooleanConverter}}" />
+            </StackPanel>
+        </DockPanel>
+
+        <DockPanel Grid.Column="1" LastChildFill="True">
+            <DockPanel DockPanel.Dock="Top" Visibility="{Binding IsStarted, Converter={StaticResource InverseBooleanToVisibilityConverter}}" HorizontalAlignment="Center" >
+                <TextBlock Text="{Binding RemainingCountText}" DockPanel.Dock="Right" TextAlignment="Center" VerticalAlignment="Center" FontSize="20" />
+                <Button Content="See more" Command="{Binding SeeMoreCommand}" Style="{StaticResource SelectorButtonStyle}" Visibility="{Binding AreExtraButtonsVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                <Button Content="Previous" Command="{Binding PreviousCommand}" Style="{StaticResource SelectorButtonStyle}" />
+                <Button Content="Skip" Command="{Binding SkipCommand}" Style="{StaticResource SelectorButtonStyle}" Visibility="{Binding AreExtraButtonsVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                <Button Content="Drop" Command="{Binding DropCommand}" Style="{StaticResource SelectorButtonStyle}" />
+                <Button Content="Keep" Command="{Binding KeepCommand}" Style="{StaticResource SelectorButtonStyle}" />
+                <Button Content="Keep All" Command="{Binding KeepAllCommand}" Style="{StaticResource SelectorButtonStyle}" />
+            </DockPanel>
+
+            <TextBlock Text="{Binding DisplayedPath}" VerticalAlignment="Center" TextAlignment="Center" FontSize="25" Height="50" DockPanel.Dock="Top"/>
+
+            <Image Source="{Binding CurrentImage, Converter={StaticResource NullImageConverter}}" Stretch="Uniform" DockPanel.Dock="Bottom" Margin="10" />
+
+        </DockPanel>
+
     </Grid>
 </Window>

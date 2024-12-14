@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 
 namespace File_Organizer
 {
@@ -10,6 +11,14 @@ namespace File_Organizer
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowViewModel();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            var viewModel = (MainWindowViewModel)DataContext;
+            viewModel.Dispose();
         }
     }
 }
