@@ -1,5 +1,4 @@
-
-### A tool made for myself and a friend of mine to organize pictures in a quick way. 
+# A solution to organize images by orientation and systematically sort them into respective folders for efficient management
 ## Main functionalities
 1. Organize pictures based on their orientation and put them into respective folders.
 2. Filter on sub-folders and choose to keep or drop the sub-folder.
